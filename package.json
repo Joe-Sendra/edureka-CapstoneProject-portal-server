@@ -1,0 +1,23 @@
+{
+  "name": "portal-server",
+  "version": "0.0.1",
+  "description": "Backend for edureka Capstone student portal project",
+  "main": "index.js",
+  "dependencies": {
+    "npm": "^6.13.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joe-Sendra/edureka-CapstoneProject-portal-server.git"
+  },
+  "author": "Joseph Sendra",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Joe-Sendra/edureka-CapstoneProject-portal-server/issues"
+  },
+  "homepage": "https://github.com/Joe-Sendra/edureka-CapstoneProject-portal-server#readme"
+}
