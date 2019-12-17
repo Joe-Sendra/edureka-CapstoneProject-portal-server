@@ -16,9 +16,13 @@ exports.addUser = (req, res, next) => {
     const hashedPassword = bcrypt.hashSync(req.body.password, 8);    
     User.create({
         email: req.body.email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: req.body.role
     },(err, user)=>{
-        if (err) return res.status(500).send("Error: Can not register user.")
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error: Can not register user.");
+        }
         res.status(201).json({
             message : "User successfully registered",
             id: user._id

@@ -12,7 +12,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 exports.login = (req, res, next) => {
-    User.findOne({ _id: req.body.id }, (err, user) => {
+    User.findOne({ email: req.body.email }, (err, user) => {
         if (err) return res.status(500).send('Server error fetching user');
         if(!user) {
             return res.status(401).send('Invalid authentication credentials!');
@@ -22,7 +22,7 @@ exports.login = (req, res, next) => {
                 return res.status(401).send('Invalid authentication credentials!');
             } else {
                 var token = jwt.sign({ id: req.body.id}, process.env.SECRET, {expiresIn: 300 });
-                res.status(200).json({token: token});
+                res.status(200).json({token: token, role: user.role});
             }
         }
     })
