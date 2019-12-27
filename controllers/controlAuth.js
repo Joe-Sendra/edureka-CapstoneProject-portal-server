@@ -16,14 +16,23 @@ exports.login = (req, res, next) => {
         if (err) return res.status(500).send('Server error fetching user');
         if(!user) {
             return res.status(401).send('Invalid authentication credentials!');
-        } else {
-            const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
-            if (!passwordIsValid) {
-                return res.status(401).send('Invalid authentication credentials!');
-            } else {
-                var token = jwt.sign({ id: req.body.id}, process.env.SECRET, {expiresIn: 300 });
-                res.status(200).json({token: token, role: user.role});
-            }
         }
+        
+        if(user.isLockedOut) {
+            return res.status(401).send('User is blocked, see admin');
+        }
+
+        if(user.resetPassword) {
+            return res.status(500).send('User must change password'); // TODO change password process
+        }
+
+        const passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+        if (!passwordIsValid) {
+            return res.status(401).send('Invalid authentication credentials!');
+        } else {
+            var token = jwt.sign({ email: req.body.email}, process.env.SECRET, {expiresIn: 600 });
+            return res.status(200).json({_id: user._id, token: token, role: user.role});
+        }
+        
     })
 }
