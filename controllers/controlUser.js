@@ -165,7 +165,7 @@ exports.resetPassword = (req, res, next) => {
                 ResetPassword.create({
                     email: user.email,
                     token: hash,
-                    expire: new Date(Date.now())
+                    expire: new Date(Date.now()) // TODO add an amount of time for expire
                 }).then(resetPasswordRecord => {
                     if (!resetPasswordRecord) {
                         return res.status(500).json({ message: 'Server Error resetting password'});
@@ -184,6 +184,7 @@ exports.resetPassword = (req, res, next) => {
                         }
                     });
 
+                    // Send email to user with token in a link
                     transporter.sendMail({
                         from: '"Admin" <Admin@school.com>', // sender address
                         to: user.email, // list of receivers
