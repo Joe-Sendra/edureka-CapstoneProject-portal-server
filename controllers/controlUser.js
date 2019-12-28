@@ -27,7 +27,6 @@ exports.addUser = (req, res, next) => {
         password: hashedPassword,
         role: newUser.role,
         isLockedOut: false,
-        resetPassword: false,
         name: {
             first: newUser.name.first,
             last: newUser.name.last
@@ -85,13 +84,7 @@ exports.updateUser = (req, res, next) => {
                 ...updatedUser,
                 isLockedOut: updateInfo.isLockedOut
             }
-        }
-        if (updateInfo.hasOwnProperty('resetPassword')) {
-            updatedUser = {
-                ...updatedUser,
-                resetPassword: updateInfo.resetPassword
-            }
-        }      
+        }     
         if (updateInfo.hasOwnProperty('name')) {
             updatedUser = {
                 ...updatedUser,
