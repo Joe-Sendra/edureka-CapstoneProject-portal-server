@@ -170,10 +170,8 @@ exports.resetPassword = (req, res, next) => {
                     if (!resetPasswordRecord) {
                         return res.status(500).json({ message: 'Server Error resetting password'});
                     }
-                    console.log('Need to send reset password email to: ' + resetPasswordRecord);
-
+                    
                     // Send reset password email to user
-
                     // Using mailtrap settings for dev purposes
                     let transporter = nodemailer.createTransport({
                         host: "smtp.mailtrap.io",
