@@ -41,6 +41,10 @@ router.post('/enroll/register',
     enrollProcess,
     EnrollController.enrollStudent);
 
+
+// /api/v1/users/enroll/register/email
+router.post('/enroll/register/email', EnrollController.emailStudents)
+
 module.exports = router;
 
 

@@ -182,7 +182,7 @@ exports.resetPassword = (req, res, next) => {
                         subject: "Reset school portal password", // Subject line
                         html: `<p>To reset your password, complete this form:</p>
                         <a href="localhost:4200/reset/${user._id}/${token}">http://localhost:4200/reset/${user._id}/${token}</a>` // html body
-                      });
+                    });
 
                     return res.status(200).json({message: 'Reset password email sent to user'});
                 });
