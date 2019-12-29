@@ -1,6 +1,9 @@
 // User model for mongoose schema
 const Enroll = require('../models/enroll');
 
+// Used to send registration emails
+const nodemailer = require('nodemailer');
+
 exports.getNonRegistered = (req, res, next) => {
     Enroll.find({isRegistered: false},{email: 1}, (err, nonRegisteredUsers)=>{
         if (err) {
@@ -25,6 +28,41 @@ exports.addEnroll = (req, res, next) => {
             id: enrollUser._id
         });
     })
+}
+
+exports.emailStudents = (req, res, next) => {
+    let students = new Array;
+    students = req.body.students;
+
+    // Send registration email to enrolled students
+    // Using mailtrap settings for dev purposes
+    let transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "08283fe192cce4",
+            pass: "d0406ce4be61b0"
+        }
+    });
+
+    students.forEach(student =>{
+        try {
+            // Send email to user with token in a link
+            transporter.sendMail({
+                from: '"Admin" <Admin@school.com>', // sender address
+                to: student.email, // list of receivers
+                subject: "School Portal registration", // Subject line
+                html: `<p>To register please, complete this form:</p>
+                <p>Your registration number is: ${student.registrationNumber}</p>
+                <a href="localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}">
+                http://localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}</a>` // html body
+            });            
+        } catch (error) {
+            console.log("ERROR sending email!!!: ", error);
+        }
+
+    });
+    return res.status(200).json({message: 'Students have been emailed'});
 }
 
 exports.enrollStudent = (req, res, next) => {

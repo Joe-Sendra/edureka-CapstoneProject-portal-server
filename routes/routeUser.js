@@ -17,6 +17,9 @@ router.post('/', UserController.addUser);
 router.patch('/', UserController.updateUser); // TODO add checkAuth
 
 
+// /api/v1/users/reset-password
+router.post('/reset-password', UserController.resetPassword);
+
 // /api/v1/users/students
 router.get('/students', UserController.getAllStudents); // TODO add checkAuth
 
@@ -37,6 +40,10 @@ router.post('/enroll/register',
     UserController.addUser,
     enrollProcess,
     EnrollController.enrollStudent);
+
+
+// /api/v1/users/enroll/register/email
+router.post('/enroll/register/email', EnrollController.emailStudents)
 
 module.exports = router;
 

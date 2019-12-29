@@ -1,8 +1,15 @@
-// User model for mongoose schema
+// Models for mongoose schema
 const User = require('../models/user');
+const ResetPassword = require('../models/resetPassword');
 
-// Use bcrypt to hash password before saving to database
+// Use bcrypt to hash password and token before saving to database
 const bcrypt = require('bcryptjs');
+
+// Used to generate random token
+const crypto = require('crypto');
+
+// Used to send reset password email
+const nodemailer = require('nodemailer');
 
 exports.getAllUsers = (req, res, next) => {
     User.find({}, (err, users)=>{
@@ -20,7 +27,6 @@ exports.addUser = (req, res, next) => {
         password: hashedPassword,
         role: newUser.role,
         isLockedOut: false,
-        resetPassword: false,
         name: {
             first: newUser.name.first,
             last: newUser.name.last
@@ -78,13 +84,7 @@ exports.updateUser = (req, res, next) => {
                 ...updatedUser,
                 isLockedOut: updateInfo.isLockedOut
             }
-        }
-        if (updateInfo.hasOwnProperty('resetPassword')) {
-            updatedUser = {
-                ...updatedUser,
-                resetPassword: updateInfo.resetPassword
-            }
-        }      
+        }     
         if (updateInfo.hasOwnProperty('name')) {
             updatedUser = {
                 ...updatedUser,
@@ -139,4 +139,55 @@ exports.updateUser = (req, res, next) => {
         });
     });
 
+}
+
+exports.resetPassword = (req, res, next) => {
+    User.findOne({email: req.body.email}, (err, user)=> {
+        if (!user) {
+            return res.status(500).json({ message: 'user does not exist' });
+        }
+        ResetPassword.findOne({email: req.body.email}, (err, record)=> {
+            if (record) {
+                ResetPassword.deleteOne({email: req.body.email}, (err)=>{
+                    if (err) return res.status(500).json({ message: 'Server Error resetting password'});
+                });
+            }
+
+            let token = crypto.randomBytes(32).toString('hex');
+            bcrypt.hash(token, 8, (err, hash)=>{
+                ResetPassword.create({
+                    email: user.email,
+                    token: hash,
+                    expire: new Date(Date.now()) // TODO add an amount of time for expire
+                }).then(resetPasswordRecord => {
+                    if (!resetPasswordRecord) {
+                        return res.status(500).json({ message: 'Server Error resetting password'});
+                    }
+                    
+                    // Send reset password email to user
+                    // Using mailtrap settings for dev purposes
+                    let transporter = nodemailer.createTransport({
+                        host: "smtp.mailtrap.io",
+                        port: 2525,
+                        auth: {
+                            user: "08283fe192cce4",
+                            pass: "d0406ce4be61b0"
+                        }
+                    });
+
+                    // Send email to user with token in a link
+                    transporter.sendMail({
+                        from: '"Admin" <Admin@school.com>', // sender address
+                        to: user.email, // list of receivers
+                        subject: "Reset school portal password", // Subject line
+                        html: `<p>To reset your password, complete this form:</p>
+                        <a href="localhost:4200/reset/${user._id}/${token}">http://localhost:4200/reset/${user._id}/${token}</a>` // html body
+                    });
+
+                    return res.status(200).json({message: 'Reset password email sent to user'});
+                });
+            });
+        });
+    });
+    
 }
