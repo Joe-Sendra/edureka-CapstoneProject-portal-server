@@ -46,15 +46,21 @@ exports.emailStudents = (req, res, next) => {
     });
 
     students.forEach(student =>{
-        // Send email to user with token in a link
-        transporter.sendMail({
-            from: '"Admin" <Admin@school.com>', // sender address
-            to: student.email, // list of receivers
-            subject: "School Portal registration", // Subject line
-            html: `<p>To register please, complete this form:</p>
-            <p>Your registration number is: ${student.registrationNumber}</p>
-            <a href="localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}">http://localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}</a>` // html body
-        });
+        try {
+            // Send email to user with token in a link
+            transporter.sendMail({
+                from: '"Admin" <Admin@school.com>', // sender address
+                to: student.email, // list of receivers
+                subject: "School Portal registration", // Subject line
+                html: `<p>To register please, complete this form:</p>
+                <p>Your registration number is: ${student.registrationNumber}</p>
+                <a href="localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}">
+                http://localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}</a>` // html body
+            });            
+        } catch (error) {
+            console.log("ERROR sending email!!!: ", error);
+        }
+
     });
     return res.status(200).json({message: 'Students have been emailed'});
 }
