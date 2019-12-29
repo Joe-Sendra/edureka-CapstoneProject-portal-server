@@ -20,6 +20,12 @@ const UserSchema = new mongoose.Schema({
     home: {type: String},
     work: {type: String},
     mobile: {type: String}
+  },
+  faculty: {
+    office: {
+      building: {type: String},
+      number: {type: String}
+    }
   }
 });
 

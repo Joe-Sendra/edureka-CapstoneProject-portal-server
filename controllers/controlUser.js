@@ -21,34 +21,74 @@ exports.getAllUsers = (req, res, next) => {
 exports.addUser = (req, res, next) => {
     // Hash the password before adding to the database
     const newUser = req.body.studentEnroll;
+    console.log(req.body);
+    if (!newUser.role) return res.status(500).send("Must provide a role");
+    
     const hashedPassword = bcrypt.hashSync(newUser.password, 8);
-    User.create({
-        email: newUser.email,
-        password: hashedPassword,
-        role: newUser.role,
-        isLockedOut: false,
-        name: {
-            first: newUser.name.first,
-            last: newUser.name.last
-        }
-    },(err, user)=>{
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Error: Can not register user.");
-        }
-
-        if (typeof req.studentEnroll !== 'undefined') {
-            if (req.studentEnroll.isEnrollInProcess) {
-                req.studentEnroll.id = user._id;   
-                return next()
+    if (newUser.role === 'student'){
+        User.create({
+            email: newUser.email,
+            password: hashedPassword,
+            role: newUser.role,
+            isLockedOut: false,
+            name: {
+                first: newUser.name.first,
+                last: newUser.name.last
             }
-        } else {
-            res.status(201).json({
-                message : "User successfully registered",
-                id: user._id
-            });
-        }
-    })
+        },(err, user)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Error: Can not register user.");
+            }
+    
+            if (typeof req.studentEnroll !== 'undefined') {
+                if (req.studentEnroll.isEnrollInProcess) {
+                    req.studentEnroll.id = user._id;   
+                    return next()
+                }
+            } else {
+                res.status(201).json({
+                    message : "User successfully registered",
+                    id: user._id
+                });
+            }
+        })
+    }
+    if (newUser.role === 'admin'){
+        User.create({
+            email: newUser.email,
+            password: hashedPassword,
+            role: newUser.role,
+            isLockedOut: false,
+            name: {
+                first: newUser.name.first,
+                last: newUser.name.last
+            },
+            faculty: {
+                office: {
+                    building: newUser.faculty.office.building,
+                    number: newUser.faculty.office.number
+                }
+            }
+        },(err, user)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Error: Can not register user.");
+            }
+    
+            if (typeof req.studentEnroll !== 'undefined') {
+                if (req.studentEnroll.isEnrollInProcess) {
+                    req.studentEnroll.id = user._id;   
+                    return next()
+                }
+            } else {
+                res.status(201).json({
+                    message : "User successfully registered",
+                    id: user._id
+                });
+            }
+        })
+    }
 }
 
 exports.getAllStudents = (req, res, next) => {
