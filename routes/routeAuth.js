@@ -10,4 +10,7 @@ router.post('/login', AuthController.login);
 // /api/v1/auth/reset
 router.post('/reset', AuthController.resetPassword);
 
+// /api/v1/auth/change
+router.post('/change', AuthController.changePassword);  // TODO add checkAuth
+
 module.exports = router;

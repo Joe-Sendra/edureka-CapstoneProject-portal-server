@@ -63,6 +63,26 @@ exports.resetPassword = (req, res, next) => {
             });
         });
     });
+}
 
+exports.changePassword = (req, res, next) => {
     
+    const email = req.body.email;
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+
+    User.findOne({email: email}, (err, user) => {
+        if (err) return res.status(500).json({ message: 'Server error retrieving user to change password' });
+        if (!user) return res.status(500).json({ message: 'User not found to change password!' });
+        if (email !== user.email) return res.status(401).json({ message: 'Invalid email provided!' });
+        if (bcrypt.compareSync(oldPassword, user.password)) {
+            const hashedPassword = bcrypt.hashSync(newPassword, 8);
+            user.updateOne({password: hashedPassword}, (err, result) => {
+                if (err) return res.status(500).json({ message: 'Server error updating password' });
+                res.status(200).json({ message: 'Password has been successfully changed'});
+            });
+        } else {
+            return res.status(401).json({ message: 'Invalid credentials provided!' });
+        }
+    });
 }
