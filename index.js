@@ -41,11 +41,13 @@ app.use((req, res, next) => {
 // Import Routes
 const authRoutes = require('./routes/routeAuth');
 const userRoutes = require('./routes/routeUser');
+const examRoutes = require('./routes/routeExam');
 
 // Routes
 app.get('/', (req, res) => res.render('index')); // Landing Page
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/exams', examRoutes);
 
 app.get('/api/v1/reg', (req, res) => {
 
