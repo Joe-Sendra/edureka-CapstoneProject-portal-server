@@ -17,4 +17,7 @@ router.post('/gp', ExamController.addGatePass);
 // /api/v1/exams/gp/:exam
 router.get('/gp/:examID', ExamController.viewGatePass)
 
+// /api/v1/exams/gp/:examID/:studentID
+router.delete('/gp/:examID/:studentID', ExamController.removeGatePass);
+
 module.exports = router;
