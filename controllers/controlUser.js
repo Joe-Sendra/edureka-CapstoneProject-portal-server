@@ -105,6 +105,82 @@ exports.getStudent = (req, res, next) => {
     });
 }
 
+exports.getStudentLeave = (req, res, next) => {
+    // /api/v1/users/students/:studentId/leave
+    User.findOne({_id: req.params.studentId}, {password: 0}, (err, student) => {
+        if (err) return res.status(500).send("Can not fetch student");
+        return res.status(200).send(student.leave);
+    });
+}
+
+exports.getStudentLeaves = (req, res, next) => {
+    // /api/v1/users/students/leave/:status
+    const leaveStatus = req.params.status;
+    User.find({}, (err, students) => {
+        if (err) return res.status(500).send("Can not fetch leave requests");
+        let leaveRequests = [];
+        students.filter(student => student.leave.length > 0).map(student => {
+            student.leave.forEach(leaveRequest => {
+                if (leaveRequest.status === leaveStatus || leaveStatus === 'all') {
+                    result = {
+                        studentId: student._id,
+                        email: student.email,
+                        leaveRequest
+                    }
+                    leaveRequests.push(result);
+                }
+            });
+        });
+        return res.status(200).json(leaveRequests);
+    });
+}
+
+exports.updateStudentLeave = (req, res, next) => {
+    // /api/v1/users/students/:studentId/leave/:leaveId
+    User.findOne({_id: req.params.studentId}, (err, student)=>{
+        if (err) return res.status(500).send("Can not fetch student");
+        const newStatus = req.body.status;
+        const requestId = req.params.leaveId;
+        student.leave.forEach(leaveRequest => {
+            if (leaveRequest._id == requestId) {
+                leaveRequest.status = newStatus;
+            }
+        });
+        student.save((err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not update student leave.");
+            } 
+            res.status(201).json({
+                message : "Student leave request successfully updated"
+            });            
+        });
+    });
+}
+
+exports.addStudentLeave = (req, res, next) => {
+    User.findOne({_id: req.params.studentId}, (err, student)=>{
+        if (err) return res.status(500).send("Can not fetch student");
+        const newLeave = {
+            requestDate: req.body.requestDate,
+            status: req.body.status,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate
+        }
+        student.leave.push(newLeave);
+        student.save((err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not add student leave.");
+            } 
+            res.status(201).json({
+                message : "Student leave request successfully added"
+            });
+        })
+        
+    });
+}
+
 exports.updateUser = (req, res, next) => {
 
     let updateInfo = req.body.updateStudentInfo;
@@ -154,6 +230,12 @@ exports.updateUser = (req, res, next) => {
                     mobile: updateInfo.phone.mobile
                 }
             }             
+        }
+        if (updateInfo.hasOwnProperty('leave')) {
+            updatedUser = {
+                ...updatedUser,
+                leave: updateInfo.leave
+            }
         }
 
         userInDB.updateOne(updateInfo, {upsert: true},(err, result)=>{
