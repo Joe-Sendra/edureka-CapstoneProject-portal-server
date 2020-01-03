@@ -20,6 +20,20 @@ const UserSchema = new mongoose.Schema({
     home: {type: String},
     work: {type: String},
     mobile: {type: String}
+  },
+  leave: [
+    {
+      requestDate: {type: String},
+      status: {type: String},
+      startDate: {type: String},
+      endDate: {type: String}
+    }
+  ],
+  faculty: {
+    office: {
+      building: {type: String},
+      number: {type: String}
+    }
   }
 });
 

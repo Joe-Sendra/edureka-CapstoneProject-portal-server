@@ -21,34 +21,74 @@ exports.getAllUsers = (req, res, next) => {
 exports.addUser = (req, res, next) => {
     // Hash the password before adding to the database
     const newUser = req.body.studentEnroll;
+    console.log(req.body);
+    if (!newUser.role) return res.status(500).send("Must provide a role");
+    
     const hashedPassword = bcrypt.hashSync(newUser.password, 8);
-    User.create({
-        email: newUser.email,
-        password: hashedPassword,
-        role: newUser.role,
-        isLockedOut: false,
-        name: {
-            first: newUser.name.first,
-            last: newUser.name.last
-        }
-    },(err, user)=>{
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Error: Can not register user.");
-        }
-
-        if (typeof req.studentEnroll !== 'undefined') {
-            if (req.studentEnroll.isEnrollInProcess) {
-                req.studentEnroll.id = user._id;   
-                return next()
+    if (newUser.role === 'student'){
+        User.create({
+            email: newUser.email,
+            password: hashedPassword,
+            role: newUser.role,
+            isLockedOut: false,
+            name: {
+                first: newUser.name.first,
+                last: newUser.name.last
             }
-        } else {
-            res.status(201).json({
-                message : "User successfully registered",
-                id: user._id
-            });
-        }
-    })
+        },(err, user)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Error: Can not register user.");
+            }
+    
+            if (typeof req.studentEnroll !== 'undefined') {
+                if (req.studentEnroll.isEnrollInProcess) {
+                    req.studentEnroll.id = user._id;   
+                    return next()
+                }
+            } else {
+                res.status(201).json({
+                    message : "User successfully registered",
+                    id: user._id
+                });
+            }
+        })
+    }
+    if (newUser.role === 'admin'){
+        User.create({
+            email: newUser.email,
+            password: hashedPassword,
+            role: newUser.role,
+            isLockedOut: false,
+            name: {
+                first: newUser.name.first,
+                last: newUser.name.last
+            },
+            faculty: {
+                office: {
+                    building: newUser.faculty.office.building,
+                    number: newUser.faculty.office.number
+                }
+            }
+        },(err, user)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Error: Can not register user.");
+            }
+    
+            if (typeof req.studentEnroll !== 'undefined') {
+                if (req.studentEnroll.isEnrollInProcess) {
+                    req.studentEnroll.id = user._id;   
+                    return next()
+                }
+            } else {
+                res.status(201).json({
+                    message : "User successfully registered",
+                    id: user._id
+                });
+            }
+        })
+    }
 }
 
 exports.getAllStudents = (req, res, next) => {
@@ -62,6 +102,82 @@ exports.getStudent = (req, res, next) => {
     User.findOne({_id: req.params.studentId}, {password: 0}, (err, student)=>{
         if (err) return res.status(500).send("Can not fetch student");
         return res.status(200).send(student);
+    });
+}
+
+exports.getStudentLeave = (req, res, next) => {
+    // /api/v1/users/students/:studentId/leave
+    User.findOne({_id: req.params.studentId}, {password: 0}, (err, student) => {
+        if (err) return res.status(500).send("Can not fetch student");
+        return res.status(200).send(student.leave);
+    });
+}
+
+exports.getStudentLeaves = (req, res, next) => {
+    // /api/v1/users/students/leave/:status
+    const leaveStatus = req.params.status;
+    User.find({}, (err, students) => {
+        if (err) return res.status(500).send("Can not fetch leave requests");
+        let leaveRequests = [];
+        students.filter(student => student.leave.length > 0).map(student => {
+            student.leave.forEach(leaveRequest => {
+                if (leaveRequest.status === leaveStatus || leaveStatus === 'all') {
+                    result = {
+                        studentId: student._id,
+                        email: student.email,
+                        leaveRequest
+                    }
+                    leaveRequests.push(result);
+                }
+            });
+        });
+        return res.status(200).json(leaveRequests);
+    });
+}
+
+exports.updateStudentLeave = (req, res, next) => {
+    // /api/v1/users/students/:studentId/leave/:leaveId
+    User.findOne({_id: req.params.studentId}, (err, student)=>{
+        if (err) return res.status(500).send("Can not fetch student");
+        const newStatus = req.body.status;
+        const requestId = req.params.leaveId;
+        student.leave.forEach(leaveRequest => {
+            if (leaveRequest._id == requestId) {
+                leaveRequest.status = newStatus;
+            }
+        });
+        student.save((err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not update student leave.");
+            } 
+            res.status(201).json({
+                message : "Student leave request successfully updated"
+            });            
+        });
+    });
+}
+
+exports.addStudentLeave = (req, res, next) => {
+    User.findOne({_id: req.params.studentId}, (err, student)=>{
+        if (err) return res.status(500).send("Can not fetch student");
+        const newLeave = {
+            requestDate: req.body.requestDate,
+            status: req.body.status,
+            startDate: req.body.startDate,
+            endDate: req.body.endDate
+        }
+        student.leave.push(newLeave);
+        student.save((err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not add student leave.");
+            } 
+            res.status(201).json({
+                message : "Student leave request successfully added"
+            });
+        })
+        
     });
 }
 
@@ -114,6 +230,12 @@ exports.updateUser = (req, res, next) => {
                     mobile: updateInfo.phone.mobile
                 }
             }             
+        }
+        if (updateInfo.hasOwnProperty('leave')) {
+            updatedUser = {
+                ...updatedUser,
+                leave: updateInfo.leave
+            }
         }
 
         userInDB.updateOne(updateInfo, {upsert: true},(err, result)=>{

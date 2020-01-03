@@ -41,13 +41,17 @@ app.use((req, res, next) => {
 // Import Routes
 const authRoutes = require('./routes/routeAuth');
 const userRoutes = require('./routes/routeUser');
+const examRoutes = require('./routes/routeExam');
 
 // Routes
 app.get('/', (req, res) => res.render('index')); // Landing Page
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/exams', examRoutes);
 
-app.get('/api/v1/reg', (req, res) => {
+app.listen(PORT, ()=>console.log(`Server running on port ${PORT}`));
+
+// app.get('/api/v1/reg', (req, res) => {
 
     // ENABLE to create new data file (will overwrite old one)
     // require('fs').writeFile(
@@ -61,14 +65,13 @@ app.get('/api/v1/reg', (req, res) => {
     // );
 
     // Sending back fake data from file
-    require('fs').readFile('./fakeRegTable.json', 'utf8', (err, data) => {
-        if (err) {
-            throw err;
-        }
-        console.log('sent fakeRegTable.json', new Date(Date.now()));
-        res.status(200).send(JSON.parse(data));
-    })
+    // require('fs').readFile('./fakeRegTable.json', 'utf8', (err, data) => {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //     console.log('sent fakeRegTable.json', new Date(Date.now()));
+    //     res.status(200).send(JSON.parse(data));
+    // })
 
-});
+// });
 
-app.listen(PORT, ()=>console.log(`Server running on port ${PORT}`));
