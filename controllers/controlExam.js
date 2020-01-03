@@ -82,3 +82,16 @@ exports.viewGatePass = (req, res, next) => {
         res.status(200).json({gatePassList: exam.gatePass});
     });
 }
+
+exports.getStudentGatePasses = (req, res, next) => {
+    // /api/v1/exams/:studentID/gp/
+    Exam.find({},(err,exams) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error: Can not retrieve exams.");
+        }
+        let studentGatePasses;
+        studentGatePasses = exams.filter(exam => exam.gatePass.includes(req.params.studentID));
+        res.status(200).json(studentGatePasses);
+    });
+}
