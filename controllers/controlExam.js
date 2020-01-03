@@ -92,6 +92,15 @@ exports.getStudentGatePasses = (req, res, next) => {
         }
         let studentGatePasses;
         studentGatePasses = exams.filter(exam => exam.gatePass.includes(req.params.studentID));
+        studentGatePasses = studentGatePasses.map(exam => {
+            return {
+                _id: exam._id,
+                examDate: exam.examDate,
+                examTime: exam.examTime,
+                name: exam.name,
+                location: exam.location
+            }
+        });
         res.status(200).json(studentGatePasses);
     });
 }
