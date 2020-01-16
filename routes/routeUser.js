@@ -20,22 +20,6 @@ router.patch('/', UserController.updateUser); // TODO add checkAuth
 // /api/v1/users/reset-password
 router.post('/reset-password', UserController.resetPassword);
 
-// /api/v1/users/students
-router.get('/students', UserController.getAllStudents); // TODO add checkAuth
-
-// /api/v1/users/students/leave/:status
-router.get('/students/leave/:status', UserController.getStudentLeaves);
-
-
-// /api/v1/users/students/:studentId
-router.get('/students/:studentId', UserController.getStudent); // TODO add checkAuth
-
-// /api/v1/users/students/:studentId/leave
-router.post('/students/:studentId/leave', UserController.addStudentLeave);
-router.get('/students/:studentId/leave', UserController.getStudentLeave);
-
-// /api/v1/users/students/:studentId/leave/:leaveId
-router.patch('/students/:studentId/leave/:leaveId', UserController.updateStudentLeave);
 
 // /api/v1/users/enroll
 router.get('/enroll', EnrollController.getNonRegistered); // TODO add checkAuth
@@ -48,7 +32,8 @@ router.post('/enroll/register',
     enrollProcess,
     UserController.addUser,
     enrollProcess,
-    EnrollController.enrollStudent);
+    EnrollController.enrollStudent
+);
 
 
 // /api/v1/users/enroll/register/email
