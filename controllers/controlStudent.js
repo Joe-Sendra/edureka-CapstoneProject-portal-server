@@ -9,7 +9,6 @@ exports.getStudents = (req, res, next) => {
 }
 
 exports.getStudent = (req, res, next) => {
-    console.log(req.params.studentID);
     User.findOne({_id: req.params.studentID}, {password: 0}, (err, student)=>{
         if (err) return res.status(500).send("Can not fetch student");
 

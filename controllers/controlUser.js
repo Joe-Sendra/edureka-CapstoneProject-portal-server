@@ -21,7 +21,6 @@ exports.getAllUsers = (req, res, next) => {
 exports.addUser = (req, res, next) => {
     // Hash the password before adding to the database
     const newUser = req.body.studentEnroll;
-    console.log(req.body);
     if (!newUser.role) return res.status(500).send("Must provide a role");
     
     const hashedPassword = bcrypt.hashSync(newUser.password, 8);
