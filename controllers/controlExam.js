@@ -148,16 +148,19 @@ exports.addGatePass = (req, res, next) => {
 exports.viewGatePasses = (req, res, next) => {
     const examID = req.params.examID;
     const shiftID = req.params.shiftID;
+    if (examID && shiftID) {
+        Exam.findOne({_id: examID}, (err, exam)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error retrieving gate pass list.");
+            }
+            let gatePasses = exam.timeTable.id(shiftID).gatePass;
+            return res.status(200).json({gatePassList: gatePasses});
+        });
+    } else {
+        return res.status(500).send("Error: Invalid request data provided");
+    }
 
-    Exam.findOne({_id: examID}, (err, exam)=>{
-        if (err) {
-            console.log(err);
-            return res.status(500).send("Server error retrieving gate pass list.");
-        }
-
-        let gatePasses = exam.timeTable.id(shiftID).gatePass;
-        res.status(200).json({gatePassList: gatePasses});
-    });
 }
 
 exports.removeGatePass = (req, res, next) => {

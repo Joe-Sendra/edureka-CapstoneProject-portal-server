@@ -41,6 +41,7 @@ app.use((req, res, next) => {
 // Import Routes
 const authRoutes = require('./routes/routeAuth');
 const examRoutes = require('./routes/routeExam');
+const leaveRoutes = require('./routes/routeLeave');
 const studentRoutes = require('./routes/routeStudent');
 const userRoutes = require('./routes/routeUser');
 
@@ -48,6 +49,7 @@ const userRoutes = require('./routes/routeUser');
 app.get('/', (req, res) => res.render('index')); // Landing Page
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/exams', examRoutes);
+app.use('/api/v1/leaves', leaveRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/users', userRoutes);
 
