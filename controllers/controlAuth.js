@@ -35,14 +35,20 @@ exports.login = (req, res, next) => {
 }
 
 exports.resetPassword = (req, res, next) => {
-    const email = req.body.email ? req.body.email : null;
-    const token = req.body.token ? req.body.token : null;
-    const newPassword = req.body.newPassword ? req.body.newPassword : null;
+    const email = req.body.email && req.body.email !== '' ? req.body.email : null;
+    const token = req.body.token && req.body.token !== '' ? req.body.token : null;
+    const newPassword = req.body.newPassword && req.body.newPassword !== '' ? req.body.newPassword : null;
 
     ResetPassword.findOne({email: email}, (err, record) => {
         if (err) return res.status(500).json({ message: 'Server error resetting password' });
         if (!record) {
             return res.status(401).json({ message: 'Invalid email address provided' });
+        }
+        if (!token) {
+            return res.status(401).json({ message: 'Invalid credentials provided' });
+        }
+        if (!newPassword) {
+            return res.status(401).json({ message: 'Invalid new password provided' });
         }
         const tokenIsValid = bcrypt.compareSync(token, record.token);
         if (!tokenIsValid) {
@@ -67,9 +73,9 @@ exports.resetPassword = (req, res, next) => {
 
 exports.changePassword = (req, res, next) => {
     
-    const email = req.body.email;
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
+    const email = req.body.email && req.body.email !== '' ? req.body.email : null;
+    const oldPassword = req.body.oldPassword && req.body.oldPassword !== '' ? req.body.oldPassword : null;
+    const newPassword = req.body.newPassword && req.body.newPassword !== '' ? req.body.newPassword : null;
 
     User.findOne({email: email}, (err, user) => {
         if (err) return res.status(500).json({ message: 'Server error retrieving user to change password' });

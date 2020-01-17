@@ -11,13 +11,22 @@ const router = express.Router();
 router.post('/', ExamController.addExam);
 router.get('/', ExamController.getExams);
 
-// /api/v1/exams/gp
-router.post('/gp', ExamController.addGatePass);
+// /api/v1/exams/:examID
+router.post('/:examID', ExamController.addTimeTable);
+router.get('/:examID', ExamController.getExam);
 
-// /api/v1/exams/gp/:exam
-router.get('/gp/:examID', ExamController.viewGatePass)
+// /api/v1/exams/:examID/shifts
+router.get('/:examID/shifts', ExamController.getExamShifts);
 
-// /api/v1/exams/gp/:examID/:studentID
-router.delete('/gp/:examID/:studentID', ExamController.removeGatePass);
+
+// /api/v1/exams/:examID/shifts/:shiftID
+router.get('/:examID/shifts/:shiftID', ExamController.getExamShift);
+router.post('/:examID/shifts/:shiftID', ExamController.addGatePass);
+
+// /api/v1/exams/:examID/shifts/:shiftID/gp
+router.get('/:examID/shifts/:shiftID/gp', ExamController.viewGatePasses);
+
+// /api/v1/exams/:examID/shifts/:shiftID/gp/:gpID
+router.delete('/:examID/shifts/:shiftID/gp/:gpID', ExamController.removeGatePass);
 
 module.exports = router;
