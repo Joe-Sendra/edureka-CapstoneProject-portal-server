@@ -22,6 +22,7 @@ router.get('/:examID/shifts', ExamController.getExamShifts);
 // /api/v1/exams/:examID/shifts/:shiftID
 router.get('/:examID/shifts/:shiftID', ExamController.getExamShift);
 router.post('/:examID/shifts/:shiftID', ExamController.addGatePass);
+router.delete('/:examID/shifts/:shiftID', ExamController.deleteExamShift);
 
 // /api/v1/exams/:examID/shifts/:shiftID/gp
 router.get('/:examID/shifts/:shiftID/gp', ExamController.viewGatePasses);

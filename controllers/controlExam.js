@@ -114,6 +114,29 @@ exports.getExamShift = (req, res, next) => {
     });
 }
 
+exports.deleteExamShift = (req, res, next) => {
+    const examID = req.params.examID;
+    const shiftID = req.params.shiftID;
+    Exam.findOne({_id: examID},(err,exam) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Server error can not find examID in DB.");
+        }
+        
+        exam.timeTable.id(shiftID).remove();
+
+        exam.save((err, result)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not remove shift.");
+            } 
+            res.status(201).json({
+                message : "Shift successfully removed from exam"
+            });
+        });
+    });
+}
+
 exports.addGatePass = (req, res, next) => {
     const examID = req.params.examID;
     const shiftID = req.params.shiftID;
