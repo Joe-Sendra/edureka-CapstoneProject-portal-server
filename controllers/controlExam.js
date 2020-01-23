@@ -80,7 +80,7 @@ exports.addTimeTable = (req, res, next) => {
 }
 
 exports.getExam = (req, res, next) => {
-    Exam.find({_id: req.params.examID},(err,exam) => {
+    Exam.findOne({_id: req.params.examID},(err,exam) => {
         if (err) {
             console.log(err);
             return res.status(500).send("Error: Can not retrieve exam.");
