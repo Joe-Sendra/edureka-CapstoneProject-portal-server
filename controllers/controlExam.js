@@ -80,7 +80,7 @@ exports.addTimeTable = (req, res, next) => {
 }
 
 exports.getExam = (req, res, next) => {
-    Exam.find({_id: req.params.examID},(err,exam) => {
+    Exam.findOne({_id: req.params.examID},(err,exam) => {
         if (err) {
             console.log(err);
             return res.status(500).send("Error: Can not retrieve exam.");
@@ -111,6 +111,76 @@ exports.getExamShift = (req, res, next) => {
         
         let shift = exam.timeTable.id(shiftID);
         res.status(200).json(shift);
+    });
+}
+
+exports.deleteExamShift = (req, res, next) => {
+    const examID = req.params.examID;
+    const shiftID = req.params.shiftID;
+    Exam.findOne({_id: examID},(err,exam) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Server error can not find examID in DB.");
+        }
+        
+        exam.timeTable.id(shiftID).remove();
+
+        exam.save((err, result)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not remove shift.");
+            } 
+            res.status(201).json({
+                message : "Shift successfully removed from exam"
+            });
+        });
+    });
+}
+
+exports.patchExamShift = (req, res, next) => {
+    const examID = req.params.examID;
+    const shiftID = req.params.shiftID;
+    
+    const examDate = req.body.examShift.examDate && req.body.examShift.examDate !== '' ? req.body.examShift.examDate : null;
+    const examTime = req.body.examShift.examTime && req.body.examShift.examTime !== '' ? req.body.examShift.examTime : null;
+
+    if (!examDate || !examTime) {
+        return res.status(500).send("Error: Invalid data format provided.");
+    }
+    const newTimeTable = {
+        examDate: examDate,
+        examTime: examTime,
+    }
+
+    Exam.findOne({_id: examID},(err,exam) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Server error can not find examID in DB.");
+        }
+
+        // verify newTimeTable does not exist in Exam.timeTable[]
+        if (exam.timeTable.length > 0) {
+            let isValidShift = true;
+            exam.timeTable.forEach(shift => {
+                if ((shift.examDate === newTimeTable.examDate) && (shift.examTime === newTimeTable.examTime)) {
+                    isValidShift = false;
+                }; 
+            });
+            if (!isValidShift) return res.status(500).send("Error: time shift already exists");
+        }
+
+        exam.timeTable.id(shiftID).examDate = newTimeTable.examDate;
+        exam.timeTable.id(shiftID).examTime = newTimeTable.examTime;
+
+        exam.save((err, result)=>{
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Server error can not update shift.");
+            } 
+            res.status(201).json({
+                message : "Shift successfully updated"
+            });
+        });
     });
 }
 

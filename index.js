@@ -17,12 +17,33 @@ app.use(bodyParser.json());
 
 // Connect DB to nodeJS server
 const mongoose = require('mongoose');
-const db = mongoose.connect(process.env.DB_URL, {
+mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
     useFindAndModify: false
+ }).catch(err => {
+   if (err.name === 'MongoNetworkError' || err.name === 'MongoTimeoutError') {
+     console.log('Init: Error connecting to the MongoDB, please check that the MongoDB server is running.');
+   } else {
+     console.log(err.name);
+   }
  });
+
+mongoose.connection.on('connected', () => console.log('connected to MongoDB server'));
+
+mongoose.connection.on('error', err => {
+console.log(err.name);
+});
+
+// catch process errors
+process.on('uncaughtException', err => {
+  if (err.name === 'MongoNetworkError') {
+    console.log('disconnected from MongoDB...');
+  } else {
+    console.log(err);
+  }
+});
 
 // allow CORS
 app.use((req, res, next) => {
@@ -53,7 +74,7 @@ app.use('/api/v1/leaves', leaveRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/users', userRoutes);
 
-app.listen(PORT, ()=>console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // app.get('/api/v1/reg', (req, res) => {
 
