@@ -6,7 +6,7 @@ const CircularSchema = new mongoose.Schema({
     author: {type: String, required: true},
     paragraph: [{type: String}],
     imgUrl: {type: String},
-    isActive: {text: Boolean}
+    isActive: {type: Boolean}
 });
 
 

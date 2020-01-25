@@ -49,3 +49,13 @@ exports.addCircular = (req, res, next) => {
         });
     });
 }
+
+exports.getCircular = (req, res, next) => {
+    Circular.findOne({_id: req.params.circularID},(err, circular) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error: Can not retrieve circular.");
+        }
+        res.status(200).json(circular);
+    });
+}
