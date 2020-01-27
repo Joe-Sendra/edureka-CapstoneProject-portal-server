@@ -15,7 +15,7 @@ exports.addCircular = (req, res, next) => {
     const circularDate = req.body.circular.date && req.body.circular.date !== '' ? req.body.circular.date : null;
     const circularTitle = req.body.circular.title && req.body.circular.title !== '' ? req.body.circular.title : null;
     const circularAuthor = req.body.circular.author && req.body.circular.author !== '' ? req.body.circular.author : null;
-    const circularParagraph = req.body.circular.paragraph && req.body.circular.paragraph !== '' ? req.body.circular.paragraph : null;
+    const circularParagraphs = req.body.circular.paragraphs && req.body.circular.paragraphs !== '' ? req.body.circular.paragraphs : null;
     const circularImgUrl = req.body.circular.imgUrl && req.body.circular.imgUrl !== '' ? req.body.circular.imgUrl : null;
     
 
@@ -23,7 +23,7 @@ exports.addCircular = (req, res, next) => {
         !circularDate ||
         !circularTitle ||
         !circularAuthor ||
-        !circularParagraph ||
+        !circularParagraphs ||
         !circularImgUrl
         ) {
         return res.status(500).send("Error: Invalid exam data provided");
@@ -33,7 +33,7 @@ exports.addCircular = (req, res, next) => {
         date: circularDate,
         title: circularTitle,
         author: circularAuthor,
-        paragraph: circularParagraph,
+        paragraphs: circularParagraphs,
         imgUrl: circularImgUrl,
         isActive: true
     }
