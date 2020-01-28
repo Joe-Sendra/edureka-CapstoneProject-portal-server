@@ -94,7 +94,7 @@ exports.addUser = (req, res, next) => {
 
 exports.updateUser = (req, res, next) => {
 
-    let updateInfo = req.body.updateStudentInfo;
+    let updateInfo = req.body.updateUserInfo;
 
     User.findById(req.body._id, (err, userInDB) => {
         if (err) return next(err);
