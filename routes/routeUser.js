@@ -14,7 +14,7 @@ const router = express.Router();
 // /api/v1/users
 router.get('/', checkAuth, UserController.getAllUsers);
 router.post('/', UserController.addUser);
-router.patch('/', UserController.updateUser); // TODO add checkAuth
+router.patch('/', checkAuth, UserController.updateUser);
 
 
 // /api/v1/users/reset-password
@@ -22,12 +22,13 @@ router.post('/reset-password', UserController.resetPassword);
 
 
 // /api/v1/users/enroll
-router.get('/enroll', EnrollController.getNonRegistered); // TODO add checkAuth
-router.post('/enroll', EnrollController.addEnroll); // TODO add checkAuth
+router.get('/enroll', checkAuth, EnrollController.getNonRegistered);
+router.post('/enroll', checkAuth, EnrollController.addEnroll);
 
 
 // /api/v1/users/enroll/register
 router.post('/enroll/register',
+    checkAuth,
     EnrollController.enrollStudent,
     enrollProcess,
     UserController.addUser,
@@ -37,7 +38,7 @@ router.post('/enroll/register',
 
 
 // /api/v1/users/enroll/register/email
-router.post('/enroll/register/email', EnrollController.emailStudents)
+router.post('/enroll/register/email', checkAuth, EnrollController.emailStudents)
 
 module.exports = router;
 
