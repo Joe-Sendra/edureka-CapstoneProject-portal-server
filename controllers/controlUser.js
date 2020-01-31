@@ -11,6 +11,10 @@ const crypto = require('crypto');
 // Used to send reset password email
 const nodemailer = require('nodemailer');
 
+// use dotenv for environment variables
+const dotenv = require('dotenv');
+dotenv.config();
+
 exports.getAllUsers = (req, res, next) => {
     User.find({}, (err, users)=>{
         if (err) return res.status(500).send("Can not fetch users");
@@ -200,11 +204,11 @@ exports.resetPassword = (req, res, next) => {
                     // Send reset password email to user
                     // Using mailtrap settings for dev purposes
                     let transporter = nodemailer.createTransport({
-                        host: "smtp.mailtrap.io",
-                        port: 2525,
+                        host: process.env.MAIL_HOST,
+                        port: process.env.MAIL_HOST_PORT,
                         auth: {
-                            user: "08283fe192cce4",
-                            pass: "d0406ce4be61b0"
+                            user: process.env.MAIL_HOST_AUTH_USER,
+                            pass: process.env.MAIL_HOST_AUTH_PASS
                         }
                     });
 
@@ -214,7 +218,7 @@ exports.resetPassword = (req, res, next) => {
                         to: user.email, // list of receivers
                         subject: "Reset school portal password", // Subject line
                         html: `<p>To reset your password, complete this form:</p>
-                        <a href="localhost:4200/reset/${user._id}/${token}">http://localhost:4200/reset/${user._id}/${token}</a>` // html body
+                        <a href="${process.env.SERVER_URL}/reset/${user._id}/${token}">${process.env.SERVER_URL}/reset/${user._id}/${token}</a>` // html body
                     });
 
                     return res.status(200).json({message: 'Reset password email sent to user'});

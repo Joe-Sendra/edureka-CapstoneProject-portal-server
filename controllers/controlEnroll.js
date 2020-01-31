@@ -4,6 +4,10 @@ const Enroll = require('../models/enroll');
 // Used to send registration emails
 const nodemailer = require('nodemailer');
 
+// use dotenv for environment variables
+const dotenv = require('dotenv');
+dotenv.config();
+
 exports.getNonRegistered = (req, res, next) => {
     Enroll.find({isRegistered: false},{email: 1}, (err, nonRegisteredUsers)=>{
         if (err) {
@@ -37,11 +41,11 @@ exports.emailStudents = (req, res, next) => {
     // Send registration email to enrolled students
     // Using mailtrap settings for dev purposes
     let transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_HOST_PORT,
         auth: {
-            user: "08283fe192cce4",
-            pass: "d0406ce4be61b0"
+            user: process.env.MAIL_HOST_AUTH_USER,
+            pass: process.env.MAIL_HOST_AUTH_PASS
         }
     });
 
@@ -54,8 +58,8 @@ exports.emailStudents = (req, res, next) => {
                 subject: "School Portal registration", // Subject line
                 html: `<p>To register please, complete this form:</p>
                 <p>Your registration number is: ${student.registrationNumber}</p>
-                <a href="localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}">
-                http://localhost:4200/admin/register;email=${student.email};reg=${student.registrationNumber}</a>` // html body
+                <a href="${process.env.SERVER_URL}/admin/register;email=${student.email};reg=${student.registrationNumber}">
+                ${process.env.SERVER_URL}/admin/register;email=${student.email};reg=${student.registrationNumber}</a>` // html body
             });            
         } catch (error) {
             console.log("ERROR sending email!!!: ", error);

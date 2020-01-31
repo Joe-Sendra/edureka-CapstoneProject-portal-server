@@ -103,7 +103,6 @@ exports.updateStudentLeave = (req, res, next) => {
     });
 }
 
-// TODO set endpoint
 exports.getStudentLeaves = (req, res, next) => {
     const leaveStatus = req.params.status;
     User.find({}, (err, students) => {
