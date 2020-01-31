@@ -7,7 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Set port from environment variable
-const PORT = process.env.SERVER_PORT;
+const PORT = process.env.PORT || process.env.SERVER_PORT;
 
 // Middleware used to parse the request data
 const bodyParser = require('body-parser');
