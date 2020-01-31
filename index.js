@@ -65,6 +65,7 @@ const circularRoutes = require('./routes/routeCircular');
 const examRoutes = require('./routes/routeExam');
 const facultyRoutes = require('./routes/routeFaculty');
 const leaveRoutes = require('./routes/routeLeave');
+const notificationRoutes = require('./routes/routeNotification');
 const studentRoutes = require('./routes/routeStudent');
 const userRoutes = require('./routes/routeUser');
 
@@ -75,6 +76,7 @@ app.use('/api/v1/circulars', circularRoutes);
 app.use('/api/v1/exams', examRoutes);
 app.use('/api/v1/faculty', facultyRoutes);
 app.use('/api/v1/leaves', leaveRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/users', userRoutes);
 
