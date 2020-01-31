@@ -28,7 +28,7 @@ exports.login = (req, res, next) => {
             return res.status(401).send('Invalid authentication credentials!');
         } else {
             var token = jwt.sign({ email: req.body.email}, process.env.SECRET, {expiresIn: 600 });
-            return res.status(200).json({_id: user._id, token: token, role: user.role});
+            return res.status(200).json({_id: user._id, token: token, expiresIn: 36000, role: user.role});
         }
         
     })

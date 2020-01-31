@@ -9,7 +9,7 @@ const router = express.Router();
 
 // /api/v1/circulars
 router.get('/', CircularController.getCirculars);
-router.post('/', CircularController.addCircular);
+router.post('/', checkAuth, CircularController.addCircular);
 
 // /api/v1/circulars/:id
 router.get('/:circularID', CircularController.getCircular);
